@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux-like Prompt Interface</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+        }
+        .prompt-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .output {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        .input-line {
+            display: flex;
+        }
+        .input-line::before {
+            content: "user@linux:~$";
+            margin-right: 10px;
+        }
+        input {
+            background: none;
+            border: none;
+            color: white;
+            font-family: inherit;
+            font-size: inherit;
+            flex-grow: 1;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="prompt-container">
+        <div class="output" id="output"></div>
+        <div class="input-line">
+            <input type="text" id="input" onkeydown="handleKey(event)">
+        </div>
+    </div>
+
+    <script>
+        const inputField = document.getElementById('input');
+        const outputField = document.getElementById('output');
+
+        function handleKey(event) {
+            if (event.key === 'Enter') {
+                const inputValue = inputField.value;
+                outputField.innerHTML += `<div>user@linux:~$ ${inputValue}</div>`;
+                inputField.value = '';
+                // Simulate a command response
+                outputField.innerHTML += `<div>${simulateCommandResponse(inputValue)}</div>`;
+                outputField.scrollTop = outputField.scrollHeight;
+            }
+        }
+
+        function simulateCommandResponse(command) {
+            switch(command.toLowerCase()) {
+                case 'ls':
+                    return 'file1.txt  file2.txt  directory1  directory2';
+                case 'pwd':
+                    return '/home/user';
+                case 'whoami':
+                    return 'user';
+                default:
+                    return `command not found: ${command}`;
+            }
+        }
+    </script>
+</body>
+</html>
+
