@@ -10,19 +10,27 @@
             color: white;
             font-family: 'Courier New', Courier, monospace;
             padding: 20px;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
         .prompt-container {
             width: 100%;
-            height: 100vh;
+            max-width: 800px;
+            height: 100%;
             display: flex;
             flex-direction: column;
         }
         .output {
             flex-grow: 1;
             overflow-y: auto;
+            margin-bottom: 10px;
         }
         .input-line {
             display: flex;
+            align-items: center;
         }
         .input-line::before {
             content: "user@linux:~$";
@@ -42,7 +50,8 @@
 <body>
     <div class="prompt-container">
         <div class="output" id="output"></div>
-        <div class="input-line">
+        <div class="input-line" id="current-prompt">
+            <span>user@linux:~$</span>
             <input type="text" id="input" onkeydown="handleKey(event)">
         </div>
     </div>
@@ -50,16 +59,30 @@
     <script>
         const inputField = document.getElementById('input');
         const outputField = document.getElementById('output');
+        const promptContainer = document.querySelector('.prompt-container');
 
         function handleKey(event) {
             if (event.key === 'Enter') {
                 const inputValue = inputField.value;
-                outputField.innerHTML += `<div>user@linux:~$ ${inputValue}</div>`;
-                inputField.value = '';
-                // Simulate a command response
-                outputField.innerHTML += `<div>${simulateCommandResponse(inputValue)}</div>`;
+                if (inputValue.trim() !== '') {
+                    outputField.innerHTML += `<div>user@linux:~$ ${inputValue}</div>`;
+                    outputField.innerHTML += `<div>${simulateCommandResponse(inputValue)}</div>`;
+                    inputField.value = '';
+                    createNewPrompt();
+                }
                 outputField.scrollTop = outputField.scrollHeight;
             }
+        }
+
+        function createNewPrompt() {
+            const newPrompt = document.createElement('div');
+            newPrompt.classList.add('input-line');
+            newPrompt.innerHTML = '<span>user@linux:~$</span><input type="text" onkeydown="handleKey(event)">';
+            promptContainer.appendChild(newPrompt);
+            inputField.removeEventListener('keydown', handleKey);
+            const newInput = newPrompt.querySelector('input');
+            newInput.focus();
+            newInput.id = 'input';
         }
 
         function simulateCommandResponse(command) {
@@ -77,4 +100,3 @@
     </script>
 </body>
 </html>
-
